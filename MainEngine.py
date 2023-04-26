@@ -1,4 +1,5 @@
 import pandas as pd
+import streamlit as st
 
 df = pd.read_pickle('df.pickle')
 indices = pd.read_pickle('indices.pickle')
@@ -6,8 +7,9 @@ raw = pd.read_pickle('rawData.pickle')
 cosineSim = pd.read_pickle('cosineSim.pickle')
 reviews = pd.read_pickle('reviews.pickle')
 
-name = input("Insert name")
+name = st.sidebar.text_input(''' Enter your user name''')
 currentUser = reviews[(reviews["User_Name"] == name) & (reviews["Polarity"] == "Positive")].reset_index(drop=True)
+st.sidebar.table(currentUser["Recipe"])
 
 def get_recommendations(name, cosineSim, raw):
     index = indices[name]
@@ -36,3 +38,5 @@ recommended.sort_values("Rating", ascending=False, inplace=True)
 recommended = recommended.reset_index(drop=True)
 
 recommendedSorted = recommended.sort_values("Rating", ascending=False)
+
+st.table(recommended)
