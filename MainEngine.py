@@ -1,5 +1,11 @@
 import pandas as pd
 import streamlit as st
+import plotly.express as px
+from plotly.graph_objs import *
+import plotly.graph_objects as go
+import plotly as py
+import plotly.io as pio
+pio.renderers.default = 'chrome'
 
 df = pd.read_pickle('df.pickle')
 indices = pd.read_pickle('indices.pickle')
@@ -39,4 +45,23 @@ recommended = recommended.reset_index(drop=True)
 
 recommendedSorted = recommended.sort_values("Rating", ascending=False)
 
-st.table(recommended)
+fig = px.bar(recommendedSorted, x='Name', y='Rating', color='Name', color_discrete_sequence=px.colors.diverging.Geyser, height=600, width=900)
+
+fig.update_xaxes(showgrid=False)
+fig.update_yaxes(showgrid=False)
+
+fig.update_layout(template="plotly_white", xaxis_showgrid=False, yaxis_showgrid=False)
+
+fig.update_traces(marker_line_color='rgb(8,48,107)',
+                  marker_line_width=2, opacity=0.6)
+
+fig.update_layout(showlegend=False, title="Rating",
+                  xaxis_title="Recommended Recipes",
+                  yaxis_title="Rate")
+
+fig.update_xaxes(showline=True, linewidth=1, linecolor='black')
+fig.update_yaxes(showline=True, linewidth=1, linecolor='black')
+
+st.dataframe(recommendedSorted)
+
+st.plotly_chart(fig)
