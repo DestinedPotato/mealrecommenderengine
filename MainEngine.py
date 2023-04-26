@@ -12,7 +12,8 @@ tfidf = TfidfVectorizer(stop_words='english')
 tfidfMatrix = tfidf.fit_transform(df['Infos'])
 cosineSim = linear_kernel(tfidfMatrix, tfidfMatrix)
 
-name = st.sidebar.text_input(''' Enter your user name''')
+st.title("Meals Recommended for you!")
+name = st.sidebar.text_input("Enter your user name")
 user = reviews[(reviews["User_Name"] == name) & (reviews["Polarity"] == "Positive")].reset_index(drop=True)
 st.sidebar.table(user["Recipe"])
 
