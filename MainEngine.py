@@ -1,21 +1,20 @@
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import linear_kernel
 import pandas as pd
 import streamlit as st
-import plotly.express as px
-from plotly.graph_objs import *
-import plotly.graph_objects as go
-import plotly as py
-import plotly.io as pio
-pio.renderers.default = 'chrome'
 
 df = pd.read_pickle('df.pickle')
 indices = pd.read_pickle('indices.pickle')
 raw = pd.read_pickle('rawData.pickle')
-cosineSim = pd.read_pickle('cosineSim.pickle')
 reviews = pd.read_pickle('reviews.pickle')
 
+tfidf = TfidfVectorizer(stop_words='english')
+tfidfMatrix = tfidf.fit_transform(df['Infos'])
+cosineSim = linear_kernel(tfidfMatrix, tfidfMatrix)
+
 name = st.sidebar.text_input(''' Enter your user name''')
-currentUser = reviews[(reviews["User_Name"] == name) & (reviews["Polarity"] == "Positive")].reset_index(drop=True)
-st.sidebar.table(currentUser["Recipe"])
+user = reviews[(reviews["User_Name"] == name) & (reviews["Polarity"] == "Positive")].reset_index(drop=True)
+st.sidebar.table(user["Recipe"])
 
 def get_recommendations(name, cosineSim, raw):
     index = indices[name]
@@ -45,23 +44,4 @@ recommended = recommended.reset_index(drop=True)
 
 recommendedSorted = recommended.sort_values("Rating", ascending=False)
 
-fig = px.bar(recommendedSorted, x='Name', y='Rating', color='Name', color_discrete_sequence=px.colors.diverging.Geyser, height=600, width=900)
-
-fig.update_xaxes(showgrid=False)
-fig.update_yaxes(showgrid=False)
-
-fig.update_layout(template="plotly_white", xaxis_showgrid=False, yaxis_showgrid=False)
-
-fig.update_traces(marker_line_color='rgb(8,48,107)',
-                  marker_line_width=2, opacity=0.6)
-
-fig.update_layout(showlegend=False, title="Rating",
-                  xaxis_title="Recommended Recipes",
-                  yaxis_title="Rate")
-
-fig.update_xaxes(showline=True, linewidth=1, linecolor='black')
-fig.update_yaxes(showline=True, linewidth=1, linecolor='black')
-
-st.dataframe(recommendedSorted)
-
-st.plotly_chart(fig)
+st.table(recommendedSorted)
