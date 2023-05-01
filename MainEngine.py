@@ -16,6 +16,10 @@ st.title("Meals Recommended for you!")
 name = st.sidebar.text_input("Enter your user name")
 user = reviews[(reviews["User_Name"] == name) & (reviews["Polarity"] == "Positive")].reset_index(drop=True)
 st.sidebar.table(user["Recipe"])
+count = 0
+response = []
+for i in user["Recipe"]:
+    response.append(st.sidebar.slider('Rating out of 5', min_value=1,max_value=5, key=i, value=3))
 
 def get_recommendations(name, cosineSim, raw):
     index = indices[name]
