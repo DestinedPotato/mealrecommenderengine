@@ -47,5 +47,8 @@ if st.button(label='Generate meals', type='primary', key='Generate meals'):
     recommendedSorted = recommended.sort_values("Rating", ascending=False)
     st.table(recommendedSorted)
 
-for i in range(9):
-    response = st.sidebar.slider('Rating out of 5', min_value=1, max_value=5, key=i, value=3)
+with st.form("Response form"):
+    with st.sidebar:
+        for i in range(9):
+            response = st.slider(('Rate meal', i+1, ' out of 5'), min_value=1, max_value=5, key=i, value=3)
+        st.form_submit_button("Submit")
