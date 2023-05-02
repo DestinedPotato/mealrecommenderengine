@@ -25,23 +25,30 @@ def get_recommendations(food, cosineSim, raw):
     return d.drop(columns=["Description", "Ingredients", "Preparation"])
 
 
-def user(cosineSim, raw):
-    food = (df.sample(1)).iloc[0, 1]
-    return get_recommendations(food, cosineSim, raw)
+def user(name, cosineSim, raw):
+    userInfo = responseDf[(responseDf["User Name"] == name) & (responseDf["Rating"] == "Positive")]
 
+    if len(userInfo) >= 1:
+        food = (userInfo.sample(1)).iloc[0, 1]
+        return get_recommendations(food, cosineSim, raw)
+    else:
+        food = (df.sample(1)).iloc[0, 1]
+        return get_recommendations(food, cosineSim, raw)
+
+
+response = []
+name = st.text_input("Enter your user name")
+response.append(name)
 
 if st.button(label='Generate meals', type='primary', key='Generate meals'):
-    recommended = user(cosineSim, raw)
+    recommended = user(name, cosineSim, raw)
     recommended.sort_values("Rating", ascending=False, inplace=True)
     recommended = recommended.reset_index(drop=True)
     recommendedSorted = recommended.sort_values("Rating", ascending=False)
     st.table(recommendedSorted)
 
-response = []
 with st.form("Response form"):
     with st.sidebar:
-        name = st.text_input("Enter your user name")
-        response.append(name)
         for i in range(10):
             rating = st.slider(label="Rate meal " + str(i+1) + " out of 5", min_value=1, max_value=5, key=i, value=3)
             if rating > 3:
