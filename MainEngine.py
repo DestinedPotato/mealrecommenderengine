@@ -6,7 +6,7 @@ import streamlit as st
 df = pd.read_pickle('df.pickle')
 indices = pd.read_pickle('indices.pickle')
 raw = pd.read_pickle('rawData.pickle')
-reviews = pd.read_pickle('reviews.pickle')
+# reviews = pd.read_pickle('reviews.pickle')
 
 tfidf = TfidfVectorizer(stop_words='english')
 tfidfMatrix = tfidf.fit_transform(df['Infos'])
@@ -14,12 +14,9 @@ cosineSim = linear_kernel(tfidfMatrix, tfidfMatrix)
 
 st.title("Meals Recommended for you!")
 name = st.sidebar.text_input("Enter your user name")
-user = reviews[(reviews["User_Name"] == name) & (reviews["Polarity"] == "Positive")].reset_index(drop=True)
-st.sidebar.table(user["Recipe"])
-count = 0
-response = []
-for i in user["Recipe"]:
-    response.append(st.sidebar.slider('Rating out of 5', min_value=1,max_value=5, key=i, value=3))
+# user = reviews[(reviews["User_Name"] == name) & (reviews["Polarity"] == "Positive")].reset_index(drop=True)
+# st.sidebar.table(user["Recipe"])
+
 
 def get_recommendations(name, cosineSim, raw):
     index = indices[name]
@@ -33,20 +30,22 @@ def get_recommendations(name, cosineSim, raw):
 
 
 def user(userName, cosineSim, raw):
-    userInfo = reviews[(reviews["User_Name"] == userName) & (reviews["Polarity"] == "Positive")]
+    # userInfo = reviews[(reviews["User_Name"] == userName) & (reviews["Polarity"] == "Positive")]
 
-    if len(userInfo) >= 1:
-        food = (userInfo.sample(1)).iloc[0, 1]
-        return get_recommendations(food, cosineSim, raw)
-    else:
-        food = (df.sample(1)).iloc[0, 1]
-        return get_recommendations(food, cosineSim, raw)
+    # if len(userInfo) >= 1:
+        # food = (userInfo.sample(1)).iloc[0, 1]
+        # return get_recommendations(food, cosineSim, raw)
+    # else:
+    food = (df.sample(1)).iloc[0, 1]
+    return get_recommendations(food, cosineSim, raw)
 
 
-recommended = user(name, cosineSim, raw)
-recommended.sort_values("Rating", ascending=False, inplace=True)
-recommended = recommended.reset_index(drop=True)
+if st.button(label='Generate meals', type='primary', key='Generate meals'):
+    recommended = user(name, cosineSim, raw)
+    recommended.sort_values("Rating", ascending=False, inplace=True)
+    recommended = recommended.reset_index(drop=True)
+    recommendedSorted = recommended.sort_values("Rating", ascending=False)
+    st.table(recommendedSorted)
 
-recommendedSorted = recommended.sort_values("Rating", ascending=False)
-
-st.table(recommendedSorted)
+for i in range(9):
+    response = st.sidebar.slider('Rating out of 5', min_value=1, max_value=5, key=i, value=3)
