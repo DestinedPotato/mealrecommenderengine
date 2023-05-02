@@ -6,13 +6,13 @@ import streamlit as st
 df = pd.read_pickle('df.pickle')
 indices = pd.read_pickle('indices.pickle')
 raw = pd.read_pickle('rawData.pickle')
+responseDf = pd.read_pickle('response.pickle')
 
 tfidf = TfidfVectorizer(stop_words='english')
 tfidfMatrix = tfidf.fit_transform(df['Infos'])
 cosineSim = linear_kernel(tfidfMatrix, tfidfMatrix)
 
 st.title("Meals Recommended for you!")
-name = st.sidebar.text_input("Enter your user name")
 
 
 def get_recommendations(food, cosineSim, raw):
@@ -38,8 +38,14 @@ if st.button(label='Generate meals', type='primary', key='Generate meals'):
     recommendedSorted = recommended.sort_values("Rating", ascending=False)
     st.table(recommendedSorted)
 
+response = []
 with st.form("Response form"):
     with st.sidebar:
-        for i in range(9):
-            response = st.slider(('Rate meal', i+1, ' out of 5'), min_value=1, max_value=5, key=i, value=3)
+        name = st.text_input("Enter your user name")
+        response.append(name)
+        for i in range(10):
+            response.append(st.slider(label="Rate meal " + str(i+1) + " out of 5", min_value=1, max_value=5, key=i, value=3))
         st.form_submit_button("Submit")
+responseDf = pd.DataFrame(data=response)
+
+responseDf.to_pickle("response.pickle")
