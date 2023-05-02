@@ -6,7 +6,7 @@ import streamlit as st
 df = pd.read_pickle('df.pickle')
 indices = pd.read_pickle('indices.pickle')
 raw = pd.read_pickle('rawData.pickle')
-#responseDf = pd.read_pickle('response.pickle')
+responseDf = pd.read_pickle('response.pickle')
 
 tfidf = TfidfVectorizer(stop_words='english')
 tfidfMatrix = tfidf.fit_transform(df['Infos'])
