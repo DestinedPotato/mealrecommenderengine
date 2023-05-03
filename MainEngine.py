@@ -36,9 +36,11 @@ def user(name, cosineSim, raw):
         return get_recommendations(food, cosineSim, raw)
 
 
-response = []
-name = st.text_input("Enter your user name")
-response.append(name)
+responseName = []
+responseMeal = []
+responseRating = []
+name = st.sidebar.text_input("Enter your user name")
+responseName.append(name)
 
 if st.button(label='Generate meals', type='primary', key='Generate meals'):
     recommended = user(name, cosineSim, raw)
@@ -46,18 +48,17 @@ if st.button(label='Generate meals', type='primary', key='Generate meals'):
     recommended = recommended.reset_index(drop=True)
     recommendedSorted = recommended.sort_values("Rating", ascending=False)
     st.table(recommendedSorted)
-
-with st.form("Response form"):
     with st.sidebar:
-        for i in range(10):
-            rating = st.slider(label="Rate meal " + str(i+1) + " out of 5", min_value=1, max_value=5, key=i, value=3)
-            if rating > 3:
-                response.append(str("Positive"))
-            elif rating < 3:
-                response.append(str("Negative"))
-            elif rating == 3:
-                response.append(str("Neutral"))
-        st.form_submit_button("Submit")
-responseDf = pd.DataFrame(data=response)
-
-responseDf.to_pickle("response.pickle")
+        with st.form("Response form"):
+            for i in range(10):
+                rating = st.slider(label="Rate " + recommendedSorted.iloc[i, 0] + " out of 5", min_value=1, max_value=5, key=i, value=3)
+                responseMeal.append(recommendedSorted.iloc[i, 0])
+                if rating > 3:
+                    responseRating.append(str("Positive"))
+                elif rating < 3:
+                    responseRating.append(str("Negative"))
+                elif rating == 3:
+                    responseRating.append(str("Neutral"))
+            st.form_submit_button("Submit")
+    response = pd.DataFrame(list(zip(responseName,responseMeal,responseRating)),columns=['Name', 'Meal', 'Rating'])
+    response.to_pickle("response.pickle")
