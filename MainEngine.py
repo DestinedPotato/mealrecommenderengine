@@ -36,29 +36,30 @@ def user(name, cosineSim, raw):
         return get_recommendations(food, cosineSim, raw)
 
 
-responseName = []
-responseMeal = []
-responseRating = []
-name = st.sidebar.text_input("Enter your user name")
-responseName.append(name)
+currentName = st.text_input("Enter your user name")
 
-if st.button(label='Generate meals', type='primary', key='Generate meals'):
-    recommended = user(name, cosineSim, raw)
-    recommended.sort_values("Rating", ascending=False, inplace=True)
-    recommended = recommended.reset_index(drop=True)
-    recommendedSorted = recommended.sort_values("Rating", ascending=False)
-    st.table(recommendedSorted)
-    with st.sidebar:
-        with st.form("Response form"):
-            for i in range(10):
-                rating = st.slider(label="Rate " + recommendedSorted.iloc[i, 0] + " out of 5", min_value=1, max_value=5, key=i, value=3)
-                responseMeal.append(recommendedSorted.iloc[i, 0])
-                if rating > 3:
-                    responseRating.append(str("Positive"))
-                elif rating < 3:
-                    responseRating.append(str("Negative"))
-                elif rating == 3:
-                    responseRating.append(str("Neutral"))
-            st.form_submit_button("Submit")
-    response = pd.DataFrame(list(zip(responseName,responseMeal,responseRating)),columns=['Name', 'Meal', 'Rating'])
-    response.to_pickle("response.pickle")
+# if st.button(label='Generate meals', type='primary', key='Generate meals'):
+recommended = user(currentName, cosineSim, raw)
+recommended.sort_values("Rating", ascending=False, inplace=True)
+recommended = recommended.reset_index(drop=True)
+recommendedSorted = recommended.sort_values("Rating", ascending=False)
+st.table(recommendedSorted)
+
+
+with st.sidebar:
+    form = st.form("Response form")
+    name = form.text_input("Enter your user name", key="Sidebar Name Input")
+    response = pd.DataFrame(columns=['User Name', 'Meal', 'Rating'])
+    for i in range(len(recommendedSorted)):
+        rating = form.slider(label="Rate " + recommendedSorted.iloc[i, 0] + " out of 5", min_value=1,
+                             max_value=5, key=i, value=3)
+        if rating > 3:
+            responseRating = str("Positive")
+        if rating < 3:
+            responseRating = str("Negative")
+        if rating == 3:
+            responseRating = str("Neutral")
+        responses = {'User Name': name, 'Meal': recommendedSorted.iloc[i, 0], 'Rating': responseRating}
+        response.loc[len(response)] = responses
+        response.to_pickle("response.pickle")
+    submit = form.form_submit_button("Submit")
