@@ -12,7 +12,7 @@ tfidf = TfidfVectorizer(stop_words='english')
 tfidfMatrix = tfidf.fit_transform(df['Infos'])
 cosineSim = linear_kernel(tfidfMatrix, tfidfMatrix)
 
-st.title("Meals Recommended for you!")
+st.title("**Meals Recommended for you!**")
 
 def get_recommendations(food, cosineSim, raw):
     index = indices[food]
@@ -62,7 +62,7 @@ st.table(recommendedSorted)
 
 
 with st.sidebar:
-    st.write("Rate the following meals out of 5: Where 1-Dislike 5-Like")
+    st.write("Rate the following meals out of 5:  \n1-Dislike 5-Like")
     form = st.form("Response form")
     name = form.text_input("Enter your user name", key='Sidebar_Name_Input')
     response = pd.DataFrame(columns=['User Name', 'Meal', 'Rating'])
