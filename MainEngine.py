@@ -70,3 +70,7 @@ with st.sidebar:
         rating = form.slider(label="Rate " + recommendedSorted.iloc[i, 0] + " out of 5", min_value=1,
                              max_value=5, key=i, value=3)
     submit = form.form_submit_button("Submit", on_click=form_callback)
+    if submit:
+        st.write("Your form has been submitted")
+    elif submit == False:
+        st.write("Your form has not been submitted")
