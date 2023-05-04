@@ -46,7 +46,7 @@ def form_callback():
         if st.session_state[i] == 3:
             responseRating = str("Neutral")
         responses = {'User Name': st.session_state.Sidebar_Name_Input, 'Meal': recommendedSorted.iloc[i, 0],
-                    'Rating': responseRating}
+                     'Rating': responseRating}
         responseDf.loc[len(responseDf)] = responses
         responseDf.to_pickle("response.pickle")
 
@@ -62,6 +62,7 @@ st.table(recommendedSorted)
 
 
 with st.sidebar:
+    st.write("Rate the following meals out of 5: Where 1-Dislike 5-Like")
     form = st.form("Response form")
     name = form.text_input("Enter your user name", key='Sidebar_Name_Input')
     response = pd.DataFrame(columns=['User Name', 'Meal', 'Rating'])
