@@ -46,9 +46,9 @@ def form_callback():
         if st.session_state[i] == 3:
             responseRating = str("Neutral")
         responses = {'User Name': st.session_state.Sidebar_Name_Input, 'Meal': recommendedSorted.iloc[i, 0],
-                     'Rating': responseRating}
-        response.loc[len(response)] = responses
-        response.to_pickle("response.pickle")
+                    'Rating': responseRating}
+        responseDf.loc[len(responseDf)] = responses
+        responseDf.to_pickle("response.pickle")
 
 
 currentName = st.text_input("Enter your user name")
