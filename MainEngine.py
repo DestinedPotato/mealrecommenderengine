@@ -12,7 +12,6 @@ tfidf = TfidfVectorizer(stop_words='english')
 tfidfMatrix = tfidf.fit_transform(df['Infos'])
 cosineSim = linear_kernel(tfidfMatrix, tfidfMatrix)
 
-st.title("**Meals Recommended for you!**")
 
 def get_recommendations(food, cosineSim, raw):
     index = indices[food]
@@ -51,9 +50,9 @@ def form_callback():
         responseDf.to_pickle("response.pickle")
 
 
+st.title("**Meals Recommended for you!**")
 currentName = st.text_input("Enter your user name")
 
-# if st.button(label='Generate meals', type='primary', key='Generate meals'):
 recommended = user(currentName, cosineSim, raw)
 recommended.sort_values("Rating", ascending=False, inplace=True)
 recommended = recommended.reset_index(drop=True)
@@ -70,3 +69,7 @@ with st.sidebar:
         rating = form.slider(label="Rate " + recommendedSorted.iloc[i, 0] + " out of 5", min_value=1,
                              max_value=5, key=i, value=3)
     submit = form.form_submit_button("Submit", on_click=form_callback)
+    if submit:
+        st.write("Your form has been submitted")
+    elif submit == False:
+        st.write("Your form has not been submitted")
